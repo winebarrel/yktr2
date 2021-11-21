@@ -1,0 +1,10 @@
+addr = "${YKTR2_ADDR}"
+port = ${YKTR2_PORT}
+team = "${YKTR2_TAEM}"
+per_page = ${YKTR2_PER_PAGE}
+session_secret = "${YKTR2_SESSION_SECRET}"
+
+[oauth2]
+client_id = "${YKTR2_OAUTH2_CLIENT_ID}"
+client_secret = "${YKTR2_OAUTH2_CLIENT_SECRET}"
+redirect_host = "${YKTR2_OAUTH2_REDIRECT_HOST}"
