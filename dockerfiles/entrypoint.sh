@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 envsubst '
   $YKTR2_ADDR
