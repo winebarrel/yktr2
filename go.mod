@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/gliderlabs/sigil v0.6.0
+	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/pat v1.0.1
 	github.com/gorilla/sessions v1.1.1
@@ -15,6 +16,7 @@ require (
 require (
 	github.com/dustin/go-jsonpointer v0.0.0-20160814072949-ba0abeacc3dc // indirect
 	github.com/dustin/gojson v0.0.0-20160307161227-2e71ec9dd5ad // indirect
+	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/gorilla/context v1.1.1 // indirect

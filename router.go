@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"strconv"
 	"strings"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/pat"
 	"github.com/gorilla/sessions"
@@ -40,7 +42,7 @@ func init() {
 	}
 }
 
-func NewRouter(cfg *Config) *pat.Router {
+func NewRouter(cfg *Config) http.Handler {
 	initGoth(cfg)
 	store := newCookieStore(cfg.SessionSecret, cfg.CookieSecure)
 	router := pat.New()
@@ -121,7 +123,7 @@ func NewRouter(cfg *Config) *pat.Router {
 		index.Execute(rw, data)
 	})
 
-	return router
+	return handlers.LoggingHandler(os.Stdout, &router.Router)
 }
 
 func initGoth(cfg *Config) {
