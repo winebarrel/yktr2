@@ -13,7 +13,6 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/pat"
 	"github.com/gorilla/sessions"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
@@ -45,12 +44,12 @@ func init() {
 func NewRouter(cfg *Config) http.Handler {
 	initGoth(cfg)
 	store := newCookieStore(cfg.SessionSecret, cfg.CookieSecure)
-	router := pat.New()
+	router := mux.NewRouter()
 	router.Use(authorizeMiddleware(store))
 
-	router.Get("/favicon.ico", http.FileServer(http.FS(favicon)).ServeHTTP)
+	router.Path("/favicon.ico").Methods("GET").Handler(http.FileServer(http.FS(favicon)))
 
-	router.Get("/auth/callback", func(rw http.ResponseWriter, r *http.Request) {
+	router.Path("/auth/callback").Methods("GET").HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		user, err := gothic.CompleteUserAuth(rw, r)
 
 		if err != nil {
@@ -67,7 +66,7 @@ func NewRouter(cfg *Config) http.Handler {
 		rw.WriteHeader(http.StatusTemporaryRedirect)
 	})
 
-	router.Get("/logout", func(res http.ResponseWriter, req *http.Request) {
+	router.Path("/logout").Methods("GET").HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		gothic.Logout(res, req)
 
 		sess, _ := store.Get(req, SessionName)
@@ -75,8 +74,9 @@ func NewRouter(cfg *Config) http.Handler {
 		sess.Save(req, res)
 	})
 
-	router.Get("/{path:(?:posts|members)}/{id}", func(rw http.ResponseWriter, r *http.Request) {
+	router.Path("/{path:(?:posts|members)}/{id:.+}").Methods("GET").HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
+		fmt.Println(vars)
 		loc := fmt.Sprintf("http://%s.esa.io/%s/%s", cfg.Team, vars["path"], vars["id"])
 		rw.Header().Set("Location", loc)
 		rw.WriteHeader(http.StatusTemporaryRedirect)
