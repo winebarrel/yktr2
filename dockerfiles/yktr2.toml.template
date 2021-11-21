@@ -3,6 +3,7 @@ port = ${YKTR2_PORT}
 team = "${YKTR2_TAEM}"
 per_page = ${YKTR2_PER_PAGE}
 session_secret = "${YKTR2_SESSION_SECRET}"
+cookie_secure = ${YKTR2_COOKIE_SECURE}
 
 [oauth2]
 client_id = "${YKTR2_OAUTH2_CLIENT_ID}"

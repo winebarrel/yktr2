@@ -17,6 +17,7 @@ type Config struct {
 	PerPage       int    `toml:"per_page" default:"5"`
 	Team          string `toml:"team"`
 	SessionSecret string `toml:"session_secret"`
+	CookieSecure  bool   `toml:"cookie_secure"`
 	Oauth2        Oauth2Config
 }
 

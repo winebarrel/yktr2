@@ -3,6 +3,7 @@ port = 8080
 team = "myteam"
 per_page = 5
 session_secret = "secret" # e.g. `openssl rand -base64 32`
+cookie_secure = false
 
 [oauth2]
 client_id = "..."

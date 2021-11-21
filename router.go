@@ -42,7 +42,7 @@ func init() {
 
 func NewRouter(cfg *Config) *pat.Router {
 	initGoth(cfg)
-	store := sessions.NewCookieStore([]byte(cfg.SessionSecret))
+	store := newCookieStore(cfg.SessionSecret, cfg.CookieSecure)
 	router := pat.New()
 	router.Use(authorizeMiddleware(store))
 
@@ -125,9 +125,7 @@ func NewRouter(cfg *Config) *pat.Router {
 }
 
 func initGoth(cfg *Config) {
-	store := sessions.NewCookieStore([]byte(cfg.SessionSecret))
-	store.Options.HttpOnly = true
-	gothic.Store = store
+	gothic.Store = newCookieStore(cfg.SessionSecret, cfg.CookieSecure)
 	callback, _ := url.Parse(cfg.Oauth2.RedirectHost)
 	callback.Path = path.Join(callback.Path, "auth/callback")
 
@@ -157,4 +155,12 @@ func authorizeMiddleware(store *sessions.CookieStore) mux.MiddlewareFunc {
 			}
 		})
 	}
+}
+
+func newCookieStore(secret string, secure bool) *sessions.CookieStore {
+	store := sessions.NewCookieStore([]byte(secret))
+	store.Options.HttpOnly = true
+	store.Options.MaxAge = 86400 * 30
+	store.Options.Secure = secure
+	return store
 }
