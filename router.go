@@ -48,7 +48,7 @@ func NewRouter(cfg *Config) *pat.Router {
 
 	router.Get("/favicon.ico", http.FileServer(http.FS(favicon)).ServeHTTP)
 
-	router.Get("/auth/esa/callback", func(rw http.ResponseWriter, r *http.Request) {
+	router.Get("/auth/callback", func(rw http.ResponseWriter, r *http.Request) {
 		user, err := gothic.CompleteUserAuth(rw, r)
 
 		if err != nil {
@@ -129,7 +129,7 @@ func initGoth(cfg *Config) {
 	store.Options.HttpOnly = true
 	gothic.Store = store
 	callback, _ := url.Parse(cfg.Oauth2.RedirectHost)
-	callback.Path = path.Join(callback.Path, "auth/esa/callback")
+	callback.Path = path.Join(callback.Path, "auth/callback")
 
 	goth.UseProviders(
 		goth_esa.New(cfg.Oauth2.ClientID, cfg.Oauth2.ClientSecret, callback.String(), "read"),
@@ -139,7 +139,7 @@ func initGoth(cfg *Config) {
 func authorizeMiddleware(store *sessions.CookieStore) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-			if strings.HasPrefix(r.URL.Path, "/auth/esa") ||
+			if strings.HasPrefix(r.URL.Path, "/auth") ||
 				strings.HasPrefix(r.URL.Path, "/logout") ||
 				strings.HasPrefix(r.URL.Path, "/favicon.ico") {
 				next.ServeHTTP(rw, r)
