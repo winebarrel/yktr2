@@ -123,7 +123,7 @@ func NewRouter(cfg *Config) http.Handler {
 		index.Execute(rw, data)
 	})
 
-	return handlers.LoggingHandler(os.Stdout, &router.Router)
+	return handlers.LoggingHandler(os.Stdout, router)
 }
 
 func initGoth(cfg *Config) {
