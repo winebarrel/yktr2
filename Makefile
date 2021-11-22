@@ -1,5 +1,5 @@
 VERSION := v0.1.0
-DOCKER_REPOSITORY := public.ecr.aws/winebarrel/yktr2
+DOCKER_REPO := public.ecr.aws/winebarrel/yktr2
 
 .PHONY: all
 all: vet build
@@ -14,11 +14,11 @@ vet:
 
 .PHONY: image
 image:
-	docker build . -t $(DOCKER_REPOSITORY)
+	docker build . -t $(DOCKER_REPO)
 
 .PHONY: push
 push: image
-	docker push $(DOCKER_REPOSITORY)
+	docker push $(DOCKER_REPO)
 
 .PHONY: clean
 clean:
