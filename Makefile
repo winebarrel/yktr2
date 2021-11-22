@@ -14,11 +14,11 @@ vet:
 
 .PHONY: image
 image:
-	docker build . -t $(DOCKER_REPO)
+	docker build . -t $(DOCKER_REPO):latest
 
 .PHONY: push
 push: image
-	docker push $(DOCKER_REPO)
+	docker push $(DOCKER_REPO):latest
 
 .PHONY: clean
 clean:
