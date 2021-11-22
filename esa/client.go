@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 const (
@@ -51,17 +52,29 @@ type Posts struct {
 type Client struct {
 	Team    string
 	PerPage int
+	Http    *http.Client
 }
 
-func GetPosts(token, team, q, page, perPage string) (*Posts, error) {
-	req, err := buildRequest(token, team, q, page, perPage)
+func NewClient(team string, perPage int) *Client {
+	httpCli := &http.Client{}
+
+	cli := &Client{
+		Team:    team,
+		PerPage: perPage,
+		Http:    httpCli,
+	}
+
+	return cli
+}
+
+func (cli *Client) Posts(token string, q string, page string) (*Posts, error) {
+	req, err := buildRequest(token, cli.Team, q, page, strconv.Itoa(cli.PerPage))
 
 	if err != nil {
 		return nil, err
 	}
 
-	httpCli := &http.Client{}
-	res, err := httpCli.Do(req)
+	res, err := cli.Http.Do(req)
 
 	if err != nil {
 		return nil, err

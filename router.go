@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"os"
 	"path"
-	"strconv"
 	"strings"
 
 	"github.com/gorilla/handlers"
@@ -84,6 +83,7 @@ func NewRouter(cfg *Config) http.Handler {
 
 	index := utils.NewTemplate(templates, "templates/index.html")
 	postNotFound := utils.NewTemplate(templates, "templates/post_not_found.html")
+	esaCli := esa.NewClient(cfg.Team, cfg.PerPage)
 
 	router.PathPrefix("/").Methods("GET").HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		user := getUser(r)
@@ -97,7 +97,7 @@ func NewRouter(cfg *Config) http.Handler {
 			q = fmt.Sprintf(`%s in:"%s"`, q, category)
 		}
 
-		posts, err := esa.GetPosts(token, cfg.Team, q, page, strconv.Itoa(cfg.PerPage))
+		posts, err := esaCli.Posts(token, q, page)
 
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
