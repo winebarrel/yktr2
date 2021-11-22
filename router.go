@@ -75,7 +75,6 @@ func NewRouter(cfg *Config) http.Handler {
 
 	router.Path("/{path:(?:posts|members)}/{id:.+}").Methods("GET").HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		fmt.Println(vars)
 		loc := fmt.Sprintf("http://%s.esa.io/%s/%s", cfg.Team, vars["path"], vars["id"])
 		rw.Header().Set("Location", loc)
 		rw.WriteHeader(http.StatusTemporaryRedirect)
