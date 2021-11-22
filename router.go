@@ -24,9 +24,9 @@ import (
 type ContextKey string
 
 const (
-	SessionName               = "_yktr2_session"
-	SessionUserKey            = "user"
-	ContextUserKey ContextKey = "user"
+	sessionName               = "_yktr2_session"
+	sessionUserKey            = "user"
+	contextUserKey ContextKey = "user"
 )
 
 //go:embed templates
@@ -58,8 +58,8 @@ func NewRouter(cfg *Config) http.Handler {
 			return
 		}
 
-		sess, _ := store.Get(r, SessionName)
-		sess.Values[SessionUserKey] = user
+		sess, _ := store.Get(r, sessionName)
+		sess.Values[sessionUserKey] = user
 		sess.Save(r, rw)
 
 		rw.Header().Set("Location", "/")
@@ -69,8 +69,8 @@ func NewRouter(cfg *Config) http.Handler {
 	router.Path("/logout").Methods("GET").HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		gothic.Logout(res, req)
 
-		sess, _ := store.Get(req, SessionName)
-		delete(sess.Values, SessionUserKey)
+		sess, _ := store.Get(req, sessionName)
+		delete(sess.Values, sessionUserKey)
 		sess.Save(req, res)
 	})
 
@@ -86,7 +86,7 @@ func NewRouter(cfg *Config) http.Handler {
 	postNotFound := utils.NewTemplate(templates, "templates/post_not_found.html")
 
 	router.PathPrefix("/").Methods("GET").HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		user := r.Context().Value(ContextUserKey).(goth.User)
+		user := getUser(r)
 		token := user.AccessToken
 
 		q := r.URL.Query().Get("q")
@@ -146,13 +146,13 @@ func authorizeMiddleware(store *sessions.CookieStore) mux.MiddlewareFunc {
 				return
 			}
 
-			sess, _ := store.Get(r, SessionName)
-			user := sess.Values[SessionUserKey]
+			sess, _ := store.Get(r, sessionName)
+			user := sess.Values[sessionUserKey]
 
 			if user == nil {
 				gothic.BeginAuthHandler(rw, r)
 			} else {
-				ctx := context.WithValue(r.Context(), ContextUserKey, user)
+				ctx := context.WithValue(r.Context(), contextUserKey, user)
 				next.ServeHTTP(rw, r.WithContext(ctx))
 			}
 		})
@@ -165,4 +165,8 @@ func newCookieStore(secret string, secure bool) *sessions.CookieStore {
 	store.Options.MaxAge = 86400 * 30
 	store.Options.Secure = secure
 	return store
+}
+
+func getUser(r *http.Request) goth.User {
+	return r.Context().Value(contextUserKey).(goth.User)
 }
