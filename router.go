@@ -48,6 +48,10 @@ func NewRouter(cfg *Config) http.Handler {
 
 	router.Path("/favicon.ico").Methods("GET").Handler(http.FileServer(http.FS(favicon)))
 
+	router.Path("/ping").Methods("GET").HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(rw, "PONG")
+	})
+
 	router.Path("/auth/callback").Methods("GET").HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		user, err := gothic.CompleteUserAuth(rw, r)
 
@@ -140,7 +144,8 @@ func authorizeMiddleware(store *sessions.CookieStore) mux.MiddlewareFunc {
 		return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 			if strings.HasPrefix(r.URL.Path, "/auth") ||
 				strings.HasPrefix(r.URL.Path, "/logout") ||
-				strings.HasPrefix(r.URL.Path, "/favicon.ico") {
+				strings.HasPrefix(r.URL.Path, "/favicon.ico") ||
+				strings.HasPrefix(r.URL.Path, "/ping") {
 				next.ServeHTTP(rw, r)
 				return
 			}
