@@ -52,7 +52,7 @@ func NewRouter(cfg *Config) http.Handler {
 		fmt.Fprintln(rw, "PONG")
 	})
 
-	router.Path("/auth/callback").Methods("GET").HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+	router.Path("/auth/esa/callback").Methods("GET").HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		user, err := gothic.CompleteUserAuth(rw, r)
 
 		if err != nil {
@@ -132,7 +132,7 @@ func NewRouter(cfg *Config) http.Handler {
 func initGoth(cfg *Config) {
 	gothic.Store = newCookieStore(cfg.SessionSecret, cfg.CookieSecure)
 	callback, _ := url.Parse(cfg.Oauth2.RedirectHost)
-	callback.Path = path.Join(callback.Path, "auth/callback")
+	callback.Path = path.Join(callback.Path, "auth/esa/callback")
 
 	goth.UseProviders(
 		goth_esa.New(cfg.Oauth2.ClientID, cfg.Oauth2.ClientSecret, callback.String(), "read"),
